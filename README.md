@@ -3,7 +3,7 @@
 ### [Discord](https://discord.gg/BH6pE7jesa)
 
 ```lua
-local NothingLibrary = loadstring(game:HttpGetAsync(''))();
+local NothingLibrary = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/3345-c-a-t-s-u-s/NOTHING/main/source.lua'))();
 local Windows = NothingLibrary.new({
 	Title = "NOTHING",
 	Description = "Nothing UI Library",
