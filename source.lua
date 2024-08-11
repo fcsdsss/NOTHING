@@ -77,6 +77,7 @@ local ElBlurSource = function()
 		Part.CastShadow = false;
 		Part.Anchored = true;
 		Part.CanCollide = false;
+		Part.CanQuery = false;
 		Part.CollisionGroup = GuiSystem:Hash();
 		Part.Size = Vector3.new(1, 1, 1) * 0.01;
 		Part.Color = Color3.fromRGB(0,0,0);
