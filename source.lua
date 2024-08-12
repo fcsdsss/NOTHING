@@ -2201,6 +2201,7 @@ function Library.new(config)
 				Button.TextTransparency = 1.000
 				
 				local Updater = function(value)
+                    drop.Default = value;
 					ValueText.Text = tostring(value);
 					drop.Callback(value);
 				end;
