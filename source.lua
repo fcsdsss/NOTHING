@@ -153,9 +153,11 @@ local ElBlurSource = function()
 		
 		C4.Update = Update;
 		C4.Signal = RunService.RenderStepped:Connect(Update);
-		
+
 		pcall(function()
-			C4.Signal2 = CurrentCamera:GetPropertyChangedSignal('CFrame'):Connect(Update);
+			C4.Signal2 = CurrentCamera:GetPropertyChangedSignal('CFrame'):Connect(function()
+				Part.CFrame = CurrentCamera.CFrame;
+			end);
 		end)
 
 		return C4;
