@@ -2,6 +2,7 @@
 ### [Icons](https://raw.githubusercontent.com/evoincorp/lucideblox/master/src/modules/util/icons.json)
 ### [Discord](https://discord.gg/BH6pE7jesa)
 
+## Require Library
 ```lua
 local NothingLibrary = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/3345-c-a-t-s-u-s/NOTHING/main/source.lua'))();
 local Windows = NothingLibrary.new({
@@ -11,12 +12,18 @@ local Windows = NothingLibrary.new({
 	Logo = 'http://www.roblox.com/asset/?id=18898582662'
 })
 
+## Create Windoe
+```lua
 local TabFrame = Windows:NewTab({
 	Title = "Example",
 	Description = "example tab",
 	Icon = "rbxassetid://7733960981"
 })
 
+```
+
+## Create Section
+```lua
 local Section = TabFrame:NewSection({
 	Title = "Section",
 	Icon = "rbxassetid://7743869054",
@@ -29,6 +36,11 @@ local InfoSection = TabFrame:NewSection({
 	Position = "Right"
 })
 
+```
+
+### Toggle
+
+```lua
 Section:NewToggle({
 	Title = "Toggle",
 	Default = false,
@@ -45,6 +57,10 @@ Section:NewToggle({
 	end,
 })
 
+```
+
+### Button
+```lua
 Section:NewButton({
 	Title = "Kill All",
 	Callback = function()
@@ -59,6 +75,10 @@ Section:NewButton({
 	end,
 })
 
+```
+
+### Slider
+```lua
 Section:NewSlider({
 	Title = "Slider",
 	Min = 10,
@@ -79,6 +99,10 @@ Section:NewSlider({
 	end,
 })
 
+```
+
+### Keybind
+```lua
 Section:NewKeybind({
 	Title = "Keybind",
 	Default = Enum.KeyCode.RightAlt,
@@ -94,7 +118,10 @@ Section:NewKeybind({
 		print(a)
 	end,
 })
+```
 
+### Dropdown
+```lua
 Section:NewDropdown({
 	Title = "Dropdown",
 	Data = {1,2,3,4,5},
@@ -113,6 +140,10 @@ Section:NewDropdown({
 	end,
 })
 
+```
+
+### End
+```lua
 InfoSection:NewTitle('UI by CATSUS')
 InfoSection:NewButton({
 	
