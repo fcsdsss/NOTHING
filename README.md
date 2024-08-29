@@ -11,8 +11,8 @@ local Windows = NothingLibrary.new({
 	Keybind = Enum.KeyCode.LeftControl,
 	Logo = 'http://www.roblox.com/asset/?id=18898582662'
 })
-
-## Create Windoe
+```
+## Create Window
 ```lua
 local TabFrame = Windows:NewTab({
 	Title = "Example",
