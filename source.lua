@@ -451,7 +451,7 @@ function Library.new(config)
 	Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	Title.BorderSizePixel = 0
 	Title.Position = UDim2.new(0.5, 0, 0.05, 0)
-	Title.Size = UDim2.new(0.9, 0, 0.03, 0)
+	Title.Size = UDim2.new(0.9, 0, 0.05, 0)
 	Title.Font = Enum.Font.GothamBold
 	Title.Text = config.Title
 	Title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -498,7 +498,7 @@ function Library.new(config)
 	TabButtonFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	TabButtonFrame.BorderSizePixel = 0
 	TabButtonFrame.ClipsDescendants = true
-	TabButtonFrame.Position = UDim2.new(0.5, 0, 0.2, 0)
+	TabButtonFrame.Position = UDim2.new(0.5, 0, 0.08, 0)
 	TabButtonFrame.Size = UDim2.new(0.95, 0, 0.1, 0)
 	Twen:Create(TabButtonFrame,TweenInfo2,{BackgroundTransparency = 0.5}):Play();
 
