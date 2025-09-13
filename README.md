@@ -159,7 +159,7 @@ InfoSection:NewButton({
 # Full Example
 
 ```lua
-local NothingLibrary = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/3345-c-a-t-s-u-s/NOTHING/main/source.lua'))();
+local NothingLibrary = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/fcsdsss/NOTHING/main/source.lua'))();
 local Notification = NothingLibrary.Notification();
 
 Notification.new({
@@ -173,7 +173,6 @@ local Windows = NothingLibrary.new({
 	Title = "NOTHING",
 	Description = "Nothing UI Library",
 	Keybind = Enum.KeyCode.LeftControl,
-	Logo = 'http://www.roblox.com/asset/?id=18898582662'
 })
 
 local TabFrame = Windows:NewTab({
