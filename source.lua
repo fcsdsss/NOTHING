@@ -514,7 +514,7 @@ function Library.new(config)
 	TabButtons.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	TabButtons.BorderSizePixel = 0
 	TabButtons.ClipsDescendants = false
-	TabButtons.Position = UDim2.new(0.5, 0, 0.5, 0)
+	TabButtons.Position = UDim2.new(0.5, 0, 0.2, 0)
 	TabButtons.Size = UDim2.new(0.97, 0, 0.97, 0)
 	TabButtons.ScrollBarThickness = 2
 	UIListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
@@ -534,7 +534,7 @@ function Library.new(config)
 	MainTabFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	MainTabFrame.BorderSizePixel = 0
 	MainTabFrame.ClipsDescendants = true
-	MainTabFrame.Position = UDim2.new(0.5, 0, 0.3, 0)
+	MainTabFrame.Position = UDim2.new(0.5, 0, 0.1, 0)
 	MainTabFrame.Size = UDim2.new(0.95, 0, 0.65, 0)
 	Twen:Create(MainTabFrame,TweenInfo2,{BackgroundTransparency = 0.5}):Play();
 
