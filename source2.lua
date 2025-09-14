@@ -3,6 +3,7 @@ local Input = game:GetService('UserInputService');
 local TextServ = game:GetService('TextService');
 local LocalPlayer = game:GetService('Players').LocalPlayer;
 local CoreGui = (gethui and gethui()) or game:FindFirstChild('CoreGui') or LocalPlayer.PlayerGui;
+local RunService = game:GetService('RunService');
 local Icons = (function()
 	local p,c = pcall(function()
 		local Http = game:HttpGetAsync('https://raw.githubusercontent.com/evoincorp/lucideblox/master/src/modules/util/icons.json');
@@ -15,7 +16,6 @@ end)() or {};
 
 local ElBlurSource = function()
 	local GuiSystem = {}
-	local RunService = game:GetService('RunService');
 	local CurrentCamera = workspace.CurrentCamera;
 
 	function GuiSystem:Hash()
@@ -183,6 +183,10 @@ function Library.GradientImage(E : Frame , Color)
 	GLImage.ImageTransparency = 1;
 	local str = 'GL_EFFECT_'..tostring(tick());
 	game:GetService('RunService'):BindToRenderStep(str,45,function()
+		if not GLImage or not GLImage.Parent then
+			game:GetService('RunService'):UnbindFromRenderStep(str)
+			return
+		end
 		if (tick() - upd) > nextU then
 			nextU = rng:NextNumber(1.1,2.5)
 			Speed = rng:NextNumber(-6,6)
@@ -263,66 +267,66 @@ function Library.new(config)
 	HomeIcon.ScaleType = Enum.ScaleType.Fit
 	HomeIcon.ImageTransparency = 1;
 	HomeIcon.BackgroundTransparency = 1;
-	
-    local CurrentMenu;
-    WindowTable.CopiedColor = { Color3.new(1, 1, 1), 0 };
-    local Mouse = LocalPlayer:GetMouse()
-    Input.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 and CurrentMenu then
-            local menu = CurrentMenu.Menu
-            if not (Mouse.X >= menu.AbsolutePosition.X and Mouse.X <= menu.AbsolutePosition.X + menu.AbsoluteSize.X and Mouse.Y >= menu.AbsolutePosition.Y and Mouse.Y <= menu.AbsolutePosition.Y + menu.AbsoluteSize.Y) then
-                CurrentMenu:Close()
-            end
-        end
-    end)
-    function WindowTable:AddContextMenu(holder, size, offset, list, activeCallback)
-        local menu;
-        if list then
-            menu = Instance.new("ScrollingFrame", {
-                BackgroundColor3 = Color3.fromRGB(17, 17, 17),
-                BorderColor3 = Color3.fromRGB(50, 50, 50),
-                BorderSizePixel = 1,
-                Size = typeof(size) == "function" and size() or size,
-                Visible = false,
-                ZIndex = 100,
-                Parent = ScreenGui,
-                ScrollBarThickness = 2,
-            })
-        else
-            menu = Instance.new("Frame", {
-                BackgroundColor3 = Color3.fromRGB(17, 17, 17),
-                BorderColor3 = Color3.fromRGB(50, 50, 50),
-                BorderSizePixel = 1,
-                Size = typeof(size) == "function" and size() or size,
-                Visible = false,
-                ZIndex = 100,
-                Parent = ScreenGui,
-            })
-        end
-        local Table = { Active = false, Holder = holder, Menu = menu }
-        if list then Table.List = Instance.new("UIListLayout", { Parent = menu, SortOrder = Enum.SortOrder.LayoutOrder }) end
-        function Table:Open()
-            if CurrentMenu then CurrentMenu:Close() end
-            CurrentMenu = Table
-            Table.Active = true
-            local posOffset = typeof(offset) == "function" and offset() or offset
-            menu.Position = UDim2.fromOffset(holder.AbsolutePosition.X + posOffset[1], holder.AbsolutePosition.Y + posOffset[2])
-            menu.Visible = true
-            if activeCallback then activeCallback(true) end
-        end
-        function Table:Close()
-            if CurrentMenu ~= Table then return end
-            menu.Visible = false
-            Table.Active = false
-            CurrentMenu = nil
-            if activeCallback then activeCallback(false) end
-        end
-        function Table:Toggle()
-            if Table.Active then Table:Close() else Table:Open() end
-        end
-        return Table
-    end
-    
+
+	local CurrentMenu;
+	WindowTable.CopiedColor = { Color3.new(1, 1, 1), 0 };
+	local Mouse = LocalPlayer:GetMouse()
+	Input.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 and CurrentMenu then
+			local menu = CurrentMenu.Menu
+			if not (Mouse.X >= menu.AbsolutePosition.X and Mouse.X <= menu.AbsolutePosition.X + menu.AbsoluteSize.X and Mouse.Y >= menu.AbsolutePosition.Y and Mouse.Y <= menu.AbsolutePosition.Y + menu.AbsoluteSize.Y) then
+				CurrentMenu:Close()
+			end
+		end
+	end)
+	function WindowTable:AddContextMenu(holder, size, offset, list, activeCallback)
+		local menu;
+		if list then
+			menu = Instance.new("ScrollingFrame", {
+				BackgroundColor3 = Color3.fromRGB(17, 17, 17),
+				BorderColor3 = Color3.fromRGB(50, 50, 50),
+				BorderSizePixel = 1,
+				Size = typeof(size) == "function" and size() or size,
+				Visible = false,
+				ZIndex = 100,
+				Parent = ScreenGui,
+				ScrollBarThickness = 2,
+			})
+		else
+			menu = Instance.new("Frame", {
+				BackgroundColor3 = Color3.fromRGB(17, 17, 17),
+				BorderColor3 = Color3.fromRGB(50, 50, 50),
+				BorderSizePixel = 1,
+				Size = typeof(size) == "function" and size() or size,
+				Visible = false,
+				ZIndex = 100,
+				Parent = ScreenGui,
+			})
+		end
+		local Table = { Active = false, Holder = holder, Menu = menu }
+		if list then Table.List = Instance.new("UIListLayout", { Parent = menu, SortOrder = Enum.SortOrder.LayoutOrder }) end
+		function Table:Open()
+			if CurrentMenu then CurrentMenu:Close() end
+			CurrentMenu = Table
+			Table.Active = true
+			local posOffset = typeof(offset) == "function" and offset() or offset
+			menu.Position = UDim2.fromOffset(holder.AbsolutePosition.X + posOffset[1], holder.AbsolutePosition.Y + posOffset[2])
+			menu.Visible = true
+			if activeCallback then activeCallback(true) end
+		end
+		function Table:Close()
+			if CurrentMenu ~= Table then return end
+			menu:Destroy()
+			Table.Active = false
+			CurrentMenu = nil
+			if activeCallback then activeCallback(false) end
+		end
+		function Table:Toggle()
+			if Table.Active then Table:Close() else Table:Open() end
+		end
+		return Table
+	end
+
 	local function Update()
 		if WindowTable.WindowToggle then
 			Twen:Create(MainFrame,TweenInfo.new(1.5,Enum.EasingStyle.Quint),{BackgroundTransparency = 0.4,Size = config.Size}):Play();
@@ -369,7 +373,7 @@ function Library.new(config)
 			WindowTable.ElBlurUI.Enabled = false;
 		end;
 		WindowTable.Dropdown:Close()
-        if CurrentMenu then CurrentMenu:Close() end;
+		if CurrentMenu then CurrentMenu:Close() end;
 		if WindowTable.ToggleButton then
 			WindowTable.ToggleButton();
 		end;
@@ -384,7 +388,7 @@ function Library.new(config)
 	end)
 	Input.InputBegan:Connect(function(io)
 		if io.KeyCode == WindowTable.Keybind then
-            if Input:GetFocusedTextBox() then return end
+			if Input:GetFocusedTextBox() then return end
 			WindowTable.WindowToggle = not WindowTable.WindowToggle
 			Update()
 		end
@@ -845,7 +849,7 @@ function Library.new(config)
 		cfg = Config(cfg,{
 			Title = "Example",
 			Description = "Tab: "..tostring(#WindowTable.Tabs + 1),
-			Icon = "rbxassetid://7733964640"
+			Icon = "rbxassetid://7733960981"
 		});
 		local TabTable = {};
 		local TabButton = Instance.new("Frame")
@@ -2001,239 +2005,241 @@ function Library.new(config)
 			end;
 			
             function SectionTable:NewColorPicker(picker)
-                picker = Config(picker, {
-                    Title = "Color Picker",
-                    Default = Color3.fromRGB(255, 255, 255),
-                    Callback = function() end
-                })
-                local FunctionColorPicker = Instance.new("Frame")
-                local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
-                local TextInt = Instance.new("TextLabel")
-                local UIGradient = Instance.new("UIGradient")
-                local Button = Instance.new("TextButton")
-                local UIStroke = Instance.new("UIStroke")
-                local System = Instance.new("Frame")
-                local UICorner = Instance.new("UICorner")
-                local ColorDisplay = Instance.new("Frame")
-                local UICorner_2 = Instance.new("UICorner")
-                local UICorner_3 = Instance.new("UICorner")
-                FunctionColorPicker.Name = "FunctionColorPicker"
-                FunctionColorPicker.Parent = Section
-                FunctionColorPicker.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
-                FunctionColorPicker.BackgroundTransparency = 1
-                FunctionColorPicker.BorderColor3 = Color3.fromRGB(0, 0, 0)
-                FunctionColorPicker.BorderSizePixel = 0
-                FunctionColorPicker.Size = UDim2.new(0.949999988, 0, 0.5, 0)
-                FunctionColorPicker.ZIndex = 17
-                Twen:Create(FunctionColorPicker, TweenInfo1, { BackgroundTransparency = 0.8 }):Play()
-                UIAspectRatioConstraint.Parent = FunctionColorPicker
-                UIAspectRatioConstraint.AspectRatio = 8.0
-                UIAspectRatioConstraint.AspectType = Enum.AspectType.ScaleWithParentSize
-                TextInt.Name = "TextInt"
-                TextInt.Parent = FunctionColorPicker
-                TextInt.AnchorPoint = Vector2.new(0.5, 0.5)
-                TextInt.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                TextInt.BackgroundTransparency = 1.0
-                TextInt.BorderColor3 = Color3.fromRGB(0, 0, 0)
-                TextInt.BorderSizePixel = 0
-                TextInt.Position = UDim2.new(0.5, 0, 0.5, 0)
-                TextInt.Size = UDim2.new(0.949999988, 0, 0.479999989, 0)
-                TextInt.ZIndex = 18
-                TextInt.Font = Enum.Font.GothamBold
-                TextInt.Text = picker.Title
-                TextInt.TextColor3 = Color3.fromRGB(255, 255, 255)
-                TextInt.TextScaled = true
-                TextInt.TextSize = 14.0
-                TextInt.TextTransparency = 0.25
-                TextInt.TextWrapped = true
-                TextInt.TextXAlignment = Enum.TextXAlignment.Left
-                UIGradient.Rotation = 90
-                UIGradient.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0.0, 0.0), NumberSequenceKeypoint.new(0.84, 0.25), NumberSequenceKeypoint.new(1.0, 1.0) })
-                UIGradient.Parent = TextInt
-                Button.Name = "Button"
-                Button.Parent = FunctionColorPicker
-                Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                Button.BackgroundTransparency = 1.0
-                Button.BorderColor3 = Color3.fromRGB(0, 0, 0)
-                Button.BorderSizePixel = 0
-                Button.Size = UDim2.new(1, 0, 1, 0)
-                Button.ZIndex = 15
-                Button.Font = Enum.Font.SourceSans
-                Button.Text = ""
-                Button.TextColor3 = Color3.fromRGB(0, 0, 0)
-                Button.TextSize = 14.0
-                Button.TextTransparency = 1.0
-                UIStroke.Transparency = 0.95
-                UIStroke.Color = Color3.fromRGB(255, 255, 255)
-                UIStroke.Parent = FunctionColorPicker
-                System.Name = "System"
-                System.Parent = FunctionColorPicker
-                System.AnchorPoint = Vector2.new(1, 0.5)
-                System.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-                System.BackgroundTransparency = 1.0
-                System.BorderColor3 = Color3.fromRGB(0, 0, 0)
-                System.BorderSizePixel = 0
-                System.Position = UDim2.new(0.975000024, 0, 0.5, 0)
-                System.Size = UDim2.new(0.155000001, 0, 0.600000024, 0)
-                System.ZIndex = 18
-                UICorner.CornerRadius = UDim.new(0.5, 0)
-                UICorner.Parent = System
-                ColorDisplay.Name = "ColorDisplay"
-                ColorDisplay.Parent = System
-                ColorDisplay.AnchorPoint = Vector2.new(0.5, 0.5)
-                ColorDisplay.BackgroundColor3 = picker.Default
-                ColorDisplay.BorderColor3 = Color3.fromRGB(0, 0, 0)
-                ColorDisplay.BorderSizePixel = 0
-                ColorDisplay.Position = UDim2.new(0.5, 0, 0.5, 0)
-                ColorDisplay.Size = UDim2.new(1.2, 0, 1.2, 0)
-                ColorDisplay.SizeConstraint = Enum.SizeConstraint.RelativeYY
-                ColorDisplay.ZIndex = 17
-                UICorner_2.CornerRadius = UDim.new(1, 0)
-                UICorner_2.Parent = ColorDisplay
-                UICorner_3.CornerRadius = UDim.new(0, 2)
-                UICorner_3.Parent = FunctionColorPicker
-                local function GetDarkerColor(color)
-                    local h, s, v = color:ToHSV()
-                    return Color3.fromHSV(h, s, v / 1.2)
-                end
-                local HueSequenceTable = {}
-                for Hue = 0, 1, 0.1 do
-                    table.insert(HueSequenceTable, ColorSequenceKeypoint.new(Hue, Color3.fromHSV(Hue, 1, 1)))
-                end
-                Button.MouseButton1Click:Connect(function()
-                    if CurrentMenu and CurrentMenu.Holder == Button then
-                        CurrentMenu:Close()
-                        return
-                    end
-                    local ColorPicker = {
-                        Value = picker.Default,
-                        Hue = 0, Sat = 0, Vib = 0,
-                    }
-                    ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib = ColorPicker.Value:ToHSV()
-                    local ColorMenu = WindowTable:AddContextMenu(Button, UDim2.fromOffset(234, 0), function() return { Button.AbsoluteSize.X / 2 - System.AbsolutePosition.X + Button.AbsolutePosition.X, Button.AbsoluteSize.Y + 5 } end, 1)
-                    ColorMenu.Menu.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-                    ColorMenu.List.Padding = UDim.new(0, 6)
-                    local padding = Instance.new("UIPadding", {
-                        PaddingLeft = UDim.new(0, 6),
-                        PaddingRight = UDim.new(0, 6),
-                        PaddingTop = UDim.new(0, 6),
-                        PaddingBottom = UDim.new(0, 6),
-                        Parent = ColorMenu.Menu
-                    })
-                    local ColorHolder = Instance.new("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 180), Parent = ColorMenu.Menu })
-                    Instance.new("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 6), Parent = ColorHolder })
-                    local SatVibMap = Instance.new("ImageButton", { BackgroundColor3 = ColorPicker.Value, Image = "rbxassetid://4155801252", Size = UDim2.fromOffset(180, 180), Parent = ColorHolder })
-                    local SatVibCursor = Instance.new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.fromOffset(6, 6), Parent = SatVibMap })
-                    Instance.new("UICorner", { CornerRadius = UDim.new(1, 0), Parent = SatVibCursor })
-                    Instance.new("UIStroke", { Color = Color3.new(0, 0, 0), Parent = SatVibCursor })
-                    local HueSelector = Instance.new("TextButton", { Size = UDim2.fromOffset(16, 180), Text = "", Parent = ColorHolder })
-                    Instance.new("UIGradient", { Color = ColorSequence.new(HueSequenceTable), Rotation = 90, Parent = HueSelector })
-                    local HueCursor = Instance.new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.new(1, 1, 1), BorderColor3 = Color3.new(0, 0, 0), BorderSizePixel = 1, Position = UDim2.fromScale(0.5, ColorPicker.Hue), Size = UDim2.new(1, 2, 0, 1), Parent = HueSelector })
-                    local InfoHolder = Instance.new("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 20), Parent = ColorMenu.Menu, })
-                    Instance.new("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, HorizontalFlex = Enum.UIFlexAlignment.Fill, Padding = UDim.new(0, 8), Parent = InfoHolder, })
-                    local HueBox = Instance.new("TextBox", { BackgroundColor3 = Color3.fromRGB(30, 30, 30), BorderColor3 = Color3.fromRGB(50, 50, 50), BorderSizePixel = 1, ClearTextOnFocus = false, Size = UDim2.fromScale(1, 1), Text = "#??????", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = Color3.new(1, 1, 1), Parent = InfoHolder, })
-                    local RgbBox = Instance.new("TextBox", { BackgroundColor3 = Color3.fromRGB(30, 30, 30), BorderColor3 = Color3.fromRGB(50, 50, 50), BorderSizePixel = 1, ClearTextOnFocus = false, Size = UDim2.fromScale(1, 1), Text = "?, ?, ?", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = Color3.new(1, 1, 1), Parent = InfoHolder, })
-                    
-                    local function updateDisplay()
-                        ColorPicker.Value = Color3.fromHSV(ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib)
-                        ColorDisplay.BackgroundColor3 = ColorPicker.Value
-                        System.BackgroundColor3 = GetDarkerColor(ColorPicker.Value)
-                        SatVibMap.BackgroundColor3 = Color3.fromHSV(ColorPicker.Hue, 1, 1)
-                        SatVibCursor.Position = UDim2.fromScale(ColorPicker.Sat, 1 - ColorPicker.Vib)
-                        HueCursor.Position = UDim2.fromScale(0.5, ColorPicker.Hue)
-                        HueBox.Text = "#" .. ColorPicker.Value:ToHex()
-                        RgbBox.Text = table.concat({ math.floor(ColorPicker.Value.R * 255), math.floor(ColorPicker.Value.G * 255), math.floor(ColorPicker.Value.B * 255), }, ", ")
-                    end
-                    local function updateAndCallback()
-                        updateDisplay()
-                        picker.Callback(ColorPicker.Value)
-                    end
-                    
-                    Button.MouseButton2Click:Connect(function()
-                        if CurrentMenu and CurrentMenu.Holder == Button and CurrentMenu.isRightClick then
-                             CurrentMenu:Close()
-                             return
-                        end
-                         local ContextMenu = WindowTable:AddContextMenu(Button, UDim2.fromOffset(100, 0), function() return { Button.AbsoluteSize.X, 0 } end, 1)
-                         ContextMenu.isRightClick = true;
-                         ContextMenu.Menu.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-                         local function CreateCtxButton(text, func)
-                             local btn = Instance.new("TextButton", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 21), Text = text, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = Color3.new(1, 1, 1), Parent = ContextMenu.Menu,})
-                             btn.MouseButton1Click:Connect(function() func(); ContextMenu:Close() end)
-                         end
-                         CreateCtxButton("Copy Color", function() WindowTable.CopiedColor = { ColorPicker.Value, 0 } end)
-                         CreateCtxButton("Paste Color", function() 
-                             picker.Default = WindowTable.CopiedColor[1];
-                             ColorPicker.Value = picker.Default;
-                             ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib = ColorPicker.Value:ToHSV();
-                             updateAndCallback();
-                         end)
-                         ContextMenu.List.Padding = UDim.new(0, 2)
-                         ContextMenu:Open()
-                    end)
+				picker = Config(picker, {
+					Title = "Color Picker",
+					Default = Color3.fromRGB(255, 255, 255),
+					Callback = function() end
+				})
+				local FunctionColorPicker = Instance.new("Frame")
+				local UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
+				local TextInt = Instance.new("TextLabel")
+				local UIGradient = Instance.new("UIGradient")
+				local Button = Instance.new("TextButton")
+				local UIStroke = Instance.new("UIStroke")
+				local System = Instance.new("Frame")
+				local UICorner = Instance.new("UICorner")
+				local ColorDisplay = Instance.new("Frame")
+				local UICorner_2 = Instance.new("UICorner")
+				local UICorner_3 = Instance.new("UICorner")
+				FunctionColorPicker.Name = "FunctionColorPicker"
+				FunctionColorPicker.Parent = Section
+				FunctionColorPicker.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
+				FunctionColorPicker.BackgroundTransparency = 1
+				FunctionColorPicker.BorderColor3 = Color3.fromRGB(0, 0, 0)
+				FunctionColorPicker.BorderSizePixel = 0
+				FunctionColorPicker.Size = UDim2.new(0.949999988, 0, 0.5, 0)
+				FunctionColorPicker.ZIndex = 17
+				Twen:Create(FunctionColorPicker, TweenInfo1, { BackgroundTransparency = 0.8 }):Play()
+				UIAspectRatioConstraint.Parent = FunctionColorPicker
+				UIAspectRatioConstraint.AspectRatio = 8.0
+				UIAspectRatioConstraint.AspectType = Enum.AspectType.ScaleWithParentSize
+				TextInt.Name = "TextInt"
+				TextInt.Parent = FunctionColorPicker
+				TextInt.AnchorPoint = Vector2.new(0.5, 0.5)
+				TextInt.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				TextInt.BackgroundTransparency = 1.0
+				TextInt.BorderColor3 = Color3.fromRGB(0, 0, 0)
+				TextInt.BorderSizePixel = 0
+				TextInt.Position = UDim2.new(0.5, 0, 0.5, 0)
+				TextInt.Size = UDim2.new(0.949999988, 0, 0.479999989, 0)
+				TextInt.ZIndex = 18
+				TextInt.Font = Enum.Font.GothamBold
+				TextInt.Text = picker.Title
+				TextInt.TextColor3 = Color3.fromRGB(255, 255, 255)
+				TextInt.TextScaled = true
+				TextInt.TextSize = 14.0
+				TextInt.TextTransparency = 0.25
+				TextInt.TextWrapped = true
+				TextInt.TextXAlignment = Enum.TextXAlignment.Left
+				UIGradient.Rotation = 90
+				UIGradient.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0.0, 0.0), NumberSequenceKeypoint.new(0.84, 0.25), NumberSequenceKeypoint.new(1.0, 1.0) })
+				UIGradient.Parent = TextInt
+				Button.Name = "Button"
+				Button.Parent = FunctionColorPicker
+				Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				Button.BackgroundTransparency = 1.0
+				Button.BorderColor3 = Color3.fromRGB(0, 0, 0)
+				Button.BorderSizePixel = 0
+				Button.Size = UDim2.new(1, 0, 1, 0)
+				Button.ZIndex = 15
+				Button.Font = Enum.Font.SourceSans
+				Button.Text = ""
+				Button.TextColor3 = Color3.fromRGB(0, 0, 0)
+				Button.TextSize = 14.0
+				Button.TextTransparency = 1.0
+				UIStroke.Transparency = 0.95
+				UIStroke.Color = Color3.fromRGB(255, 255, 255)
+				UIStroke.Parent = FunctionColorPicker
+				System.Name = "System"
+				System.Parent = FunctionColorPicker
+				System.AnchorPoint = Vector2.new(1, 0.5)
+				System.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+				System.BackgroundTransparency = 1.0
+				System.BorderColor3 = Color3.fromRGB(0, 0, 0)
+				System.BorderSizePixel = 0
+				System.Position = UDim2.new(0.975000024, 0, 0.5, 0)
+				System.Size = UDim2.new(0.155000001, 0, 0.600000024, 0)
+				System.ZIndex = 18
+				UICorner.CornerRadius = UDim.new(0.5, 0)
+				UICorner.Parent = System
+				ColorDisplay.Name = "ColorDisplay"
+				ColorDisplay.Parent = System
+				ColorDisplay.AnchorPoint = Vector2.new(0.5, 0.5)
+				ColorDisplay.BackgroundColor3 = picker.Default
+				ColorDisplay.BorderColor3 = Color3.fromRGB(0, 0, 0)
+				ColorDisplay.BorderSizePixel = 0
+				ColorDisplay.Position = UDim2.new(0.5, 0, 0.5, 0)
+				ColorDisplay.Size = UDim2.new(1.2, 0, 1.2, 0)
+				ColorDisplay.SizeConstraint = Enum.SizeConstraint.RelativeYY
+				ColorDisplay.ZIndex = 17
+				UICorner_2.CornerRadius = UDim.new(1, 0)
+				UICorner_2.Parent = ColorDisplay
+				UICorner_3.CornerRadius = UDim.new(0, 2)
+				UICorner_3.Parent = FunctionColorPicker
+				local function GetDarkerColor(color)
+					local h, s, v = color:ToHSV()
+					return Color3.fromHSV(h, s, v / 1.2)
+				end
+				local HueSequenceTable = {}
+				for Hue = 0, 1, 0.1 do
+					table.insert(HueSequenceTable, ColorSequenceKeypoint.new(Hue, Color3.fromHSV(Hue, 1, 1)))
+				end
+				Button.MouseButton1Click:Connect(function()
+					if CurrentMenu and CurrentMenu.Holder == Button then
+						CurrentMenu:Close()
+						return
+					end
+					local ColorPicker = {
+						Value = picker.Default,
+						Hue = 0, Sat = 0, Vib = 0,
+					}
+					ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib = ColorPicker.Value:ToHSV()
+					local ColorMenu = WindowTable:AddContextMenu(Button, UDim2.fromOffset(234, 210), function() return { Button.AbsoluteSize.X / 2 - System.AbsolutePosition.X + Button.AbsolutePosition.X, Button.AbsoluteSize.Y + 5 } end, 1)
+					ColorMenu.Menu.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+					ColorMenu.List.Padding = UDim.new(0, 6)
+					local padding = Instance.new("UIPadding", {
+						PaddingLeft = UDim.new(0, 6),
+						PaddingRight = UDim.new(0, 6),
+						PaddingTop = UDim.new(0, 6),
+						PaddingBottom = UDim.new(0, 6),
+						Parent = ColorMenu.Menu
+					})
+					local ColorHolder = Instance.new("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 180), Parent = ColorMenu.Menu })
+					Instance.new("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 6), Parent = ColorHolder })
+					local SatVibMap = Instance.new("ImageButton", { BackgroundColor3 = ColorPicker.Value, Image = "rbxassetid://4155801252", Size = UDim2.fromOffset(180, 180), Parent = ColorHolder })
+					local SatVibCursor = Instance.new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.new(1, 1, 1), Size = UDim2.new(0, 6, 0, 6), Parent = SatVibMap })
+					Instance.new("UICorner", { CornerRadius = UDim.new(1, 0), Parent = SatVibCursor })
+					Instance.new("UIStroke", { Color = Color3.new(0, 0, 0), Parent = SatVibCursor })
+					local HueSelector = Instance.new("TextButton", { Size = UDim2.fromOffset(16, 180), Text = "", Parent = ColorHolder })
+					Instance.new("UIGradient", { Color = ColorSequence.new(HueSequenceTable), Rotation = 90, Parent = HueSelector })
+					local HueCursor = Instance.new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.new(1, 1, 1), BorderColor3 = Color3.new(0, 0, 0), BorderSizePixel = 1, Position = UDim2.fromScale(0.5, ColorPicker.Hue), Size = UDim2.new(1, 2, 0, 1), Parent = HueSelector })
+					local InfoHolder = Instance.new("Frame", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 20), Parent = ColorMenu.Menu, })
+					Instance.new("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, HorizontalFlex = Enum.UIFlexAlignment.Fill, Padding = UDim.new(0, 8), Parent = InfoHolder, })
+					local HueBox = Instance.new("TextBox", { BackgroundColor3 = Color3.fromRGB(30, 30, 30), BorderColor3 = Color3.fromRGB(50, 50, 50), BorderSizePixel = 1, ClearTextOnFocus = false, Size = UDim2.fromScale(1, 1), Text = "#??????", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = Color3.new(1, 1, 1), Parent = InfoHolder, })
+					local RgbBox = Instance.new("TextBox", { BackgroundColor3 = Color3.fromRGB(30, 30, 30), BorderColor3 = Color3.fromRGB(50, 50, 50), BorderSizePixel = 1, ClearTextOnFocus = false, Size = UDim2.fromScale(1, 1), Text = "?, ?, ?", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = Color3.new(1, 1, 1), Parent = InfoHolder, })
 
-                    SatVibMap.InputBegan:Connect(function(input)
-                        if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-                        while Input:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                            local absPos, absSize = SatVibMap.AbsolutePosition, SatVibMap.AbsoluteSize
-                            local mousePos = Input:GetMouseLocation()
-                            local relativePos = mousePos - absPos
-                            local newSat = math.clamp(relativePos.X / absSize.X, 0, 1)
-                            local newVib = 1 - math.clamp(relativePos.Y / absSize.Y, 0, 1)
-                            if ColorPicker.Sat ~= newSat or ColorPicker.Vib ~= newVib then
-                                ColorPicker.Sat, ColorPicker.Vib = newSat, newVib
-                                updateAndCallback()
-                            end
-                            game:GetService("RunService").RenderStepped:Wait()
-                        end
-                    end)
-                    HueSelector.InputBegan:Connect(function(input)
-                        if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
-                        while Input:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-                            local absPos, absSize = HueSelector.AbsolutePosition, HueSelector.AbsoluteSize
-                            local mousePos = Input:GetMouseLocation()
-                            local relativeY = mousePos.Y - absPos.Y
-                            local newHue = math.clamp(relativeY / absSize.Y, 0, 1)
-                            if ColorPicker.Hue ~= newHue then
-                                ColorPicker.Hue = newHue
-                                updateAndCallback()
-                            end
-                             game:GetService("RunService").RenderStepped:Wait()
-                        end
-                    end)
-                    HueBox.FocusLost:Connect(function(enter)
-                        if not enter then return end
-                        local success, color = pcall(Color3.fromHex, HueBox.Text)
-                        if success then ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib = color:ToHSV() end
-                        updateAndCallback()
-                    end)
-                    RgbBox.FocusLost:Connect(function(enter)
-                        if not enter then return end
-                        local r, g, b = RgbBox.Text:match("(%d+),%s*(%d+),%s*(%d+)")
-                        if r and g and b then 
-                             local suc, color = pcall(Color3.fromRGB, r, g, b)
-                             if suc then
-                                ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib = color:ToHSV()
-                             end
-                        end
-                        updateAndCallback()
-                    end)
-                    updateDisplay()
-                    ColorMenu:Open()
-                end)
-                return {
-                    Visible = function(newindx) FunctionColorPicker.Visible = newindx end,
-                    Value = function(color)
-                        if typeof(color) == "Color3" then
-                             picker.Default = color;
-                             ColorDisplay.BackgroundColor3 = color
-                             System.BackgroundColor3 = GetDarkerColor(color)
-                             picker.Callback(color)
-                        end
-                    end
-                }
-            end
+					local function updateDisplay()
+						ColorPicker.Value = Color3.fromHSV(ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib)
+						picker.Default = ColorPicker.Value
+						ColorDisplay.BackgroundColor3 = ColorPicker.Value
+						System.BackgroundColor3 = GetDarkerColor(ColorPicker.Value)
+						SatVibMap.BackgroundColor3 = Color3.fromHSV(ColorPicker.Hue, 1, 1)
+						SatVibCursor.Position = UDim2.fromScale(ColorPicker.Sat, 1 - ColorPicker.Vib)
+						HueCursor.Position = UDim2.fromScale(0.5, ColorPicker.Hue)
+						HueBox.Text = "#" .. ColorPicker.Value:ToHex()
+						RgbBox.Text = table.concat({ math.floor(ColorPicker.Value.R * 255), math.floor(ColorPicker.Value.G * 255), math.floor(ColorPicker.Value.B * 255), }, ", ")
+					end
+					local function updateAndCallback()
+						updateDisplay()
+						picker.Callback(ColorPicker.Value)
+					end
 
+					Button.MouseButton2Click:Connect(function()
+						if CurrentMenu and CurrentMenu.Holder == Button and CurrentMenu.isRightClick then
+							CurrentMenu:Close()
+							return
+						end
+						local ContextMenu = WindowTable:AddContextMenu(Button, UDim2.fromOffset(100, 50), function() return { Button.AbsoluteSize.X/2 - System.AbsolutePosition.X + Button.AbsolutePosition.X, 0 } end, 1)
+						ContextMenu.isRightClick = true;
+						ContextMenu.Menu.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+						local function CreateCtxButton(text, func)
+							local btn = Instance.new("TextButton", { BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 21), Text = text, Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = Color3.new(1, 1, 1), Parent = ContextMenu.Menu,})
+							btn.MouseEnter:Connect(function() btn.BackgroundTransparency = 0.8 end)
+							btn.MouseLeave:Connect(function() btn.BackgroundTransparency = 1 end)
+							btn.MouseButton1Click:Connect(function() func(); ContextMenu:Close() end)
+						end
+						CreateCtxButton("Copy Color", function() WindowTable.CopiedColor = { ColorPicker.Value, 0 } end)
+						CreateCtxButton("Paste Color", function()
+							picker.Default = WindowTable.CopiedColor[1];
+							ColorPicker.Value = picker.Default;
+							ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib = ColorPicker.Value:ToHSV();
+							updateAndCallback();
+						end)
+						ContextMenu.List.Padding = UDim.new(0, 2)
+						ContextMenu:Open()
+					end)
+
+					SatVibMap.InputBegan:Connect(function(input)
+						if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+						while Input:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
+							local absPos, absSize = SatVibMap.AbsolutePosition, SatVibMap.AbsoluteSize
+							local mousePos = Input:GetMouseLocation()
+							local relativePos = mousePos - absPos
+							local newSat = math.clamp(relativePos.X / absSize.X, 0, 1)
+							local newVib = 1 - math.clamp(relativePos.Y / absSize.Y, 0, 1)
+							if ColorPicker.Sat ~= newSat or ColorPicker.Vib ~= newVib then
+								ColorPicker.Sat, ColorPicker.Vib = newSat, newVib
+								updateAndCallback()
+							end
+							RunService.RenderStepped:Wait()
+						end
+					end)
+					HueSelector.InputBegan:Connect(function(input)
+						if input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+						while Input:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
+							local absPos, absSize = HueSelector.AbsolutePosition, HueSelector.AbsoluteSize
+							local mousePos = Input:GetMouseLocation()
+							local relativeY = mousePos.Y - absPos.Y
+							local newHue = math.clamp(relativeY / absSize.Y, 0, 1)
+							if ColorPicker.Hue ~= newHue then
+								ColorPicker.Hue = newHue
+								updateAndCallback()
+							end
+							RunService.RenderStepped:Wait()
+						end
+					end)
+					HueBox.FocusLost:Connect(function(enter)
+						if not enter then return end
+						local success, color = pcall(Color3.fromHex, HueBox.Text)
+						if success then ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib = color:ToHSV() end
+						updateAndCallback()
+					end)
+					RgbBox.FocusLost:Connect(function(enter)
+						if not enter then return end
+						local r, g, b = RgbBox.Text:match("(%d+),%s*(%d+),%s*(%d+)")
+						if r and g and b then
+							local suc, color = pcall(Color3.fromRGB, r, g, b)
+							if suc then
+								ColorPicker.Hue, ColorPicker.Sat, ColorPicker.Vib = color:ToHSV()
+							end
+						end
+						updateAndCallback()
+					end)
+					updateDisplay()
+					ColorMenu:Open()
+				end)
+				return {
+					Visible = function(newindx) FunctionColorPicker.Visible = newindx end,
+					Value = function(color)
+						if typeof(color) == "Color3" then
+							picker.Default = color;
+							ColorDisplay.BackgroundColor3 = color
+							System.BackgroundColor3 = GetDarkerColor(color)
+							picker.Callback(color)
+						end
+					end
+				}
+			end
 			return SectionTable;
 		end;
 		return TabTable;
